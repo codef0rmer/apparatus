@@ -1,0 +1,44 @@
+<h2>I need...</h2>
+
+<div class="btn-group" ng-repeat="device in devices">
+  <a class="btn btn-large dropdown-toggle" data-toggle="dropdown" href="" ng-class="{'me': 'btn-success', 'none': 'btn-info'}[device.hold]" ng-hide="device.hold == 'you'">
+    {{device.name}}<br><small>{{device.device}}</small>
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu">
+    <li><a href="" ng-click="buy(device.id, '30 Minutes')">30 Minutes</a></li>
+    <li><a href="" ng-click="buy(device.id, '1 Hour')">1 Hour</a></li>
+    <li><a href="" ng-click="buy(device.id, '2 Hours')">2 Hours</a></li>
+    <li><a href="" ng-click="buy(device.id, '3 Hours')">3 Hours</a></li>
+    <li><a href="" ng-click="buy(device.id, '4 Hours')">4 Hours</a></li>
+    <li><a href="" ng-click="buy(device.id, 'Whole Day')">Whole Day</a></li>
+    <li><a href="" ng-click="buy(device.id, '2 Days')">2 Days</a></li>
+    <li class="divider" ng-show="device.hold == 'me'"></li>
+    <li><a href="" ng-click="sell(device.id)" ng-show="device.hold == 'me'">Slipped Off!</a></li>
+  </ul>
+</div>
+<br>
+<br>
+<h2>I'm looking for...</h2>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Device</th>
+      <th>Owned since</th>
+      <th>Owned By</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="holder in holders" ng-class="{true: 'success'}[isHeld(holder.deviceId, user)]">
+    <td>{{ devices | device : holder.deviceId }} (For {{timespan(holder.timespan, true)}})</td>
+    <td>
+      <timer start-time="holder.startAt" interval="60000">
+        <span ng-show="days">{{days}} days,</span>
+        <span ng-show="hours">{{hours}} hours,</span>
+        <span ng-show="minutes">{{minutes}} minutes</span>
+      </timer>
+    </td>
+    <td>{{ owners | owner : holder.user }}</td>
+  </tr>
+  </tbody>
+</table>
