@@ -1,6 +1,15 @@
 <h2>I need...</h2>
 
-<div class="btn-group" ng-repeat="device in devices">
+<div class='filter-panel ng-cloak' ng-show="categories">
+  <label class="checkbox inline">
+    Filter:
+  </label>
+  <label class="checkbox inline" ng-repeat="category in categories">
+    <input type="checkbox" ng-checked="filters.indexOf(category) != -1" value="{{category}}" ng-click="filterIt(category)"> {{category}}
+  </label>
+</div>
+
+<div class="btn-group device" ng-repeat="device in devices | deviceByCategory : filters | orderBy: ['hold', 'name']">
   <a class="btn btn-large dropdown-toggle" data-toggle="dropdown" href="" ng-class="{'me': 'btn-success', 'none': 'btn-info'}[device.hold]" ng-hide="device.hold == 'you'">
     {{device.name}}<br><small>{{device.device}}</small>
     <span class="caret"></span>
@@ -13,32 +22,35 @@
     <li><a href="" ng-click="buy(device.id, '4 Hours')">4 Hours</a></li>
     <li><a href="" ng-click="buy(device.id, 'Whole Day')">Whole Day</a></li>
     <li><a href="" ng-click="buy(device.id, '2 Days')">2 Days</a></li>
+    <li><a href="" ng-click="buy(device.id, 'Forever')">Forever</a></li>
     <li class="divider" ng-show="device.hold == 'me'"></li>
     <li><a href="" ng-click="sell(device.id)" ng-show="device.hold == 'me'">Slipped Off!</a></li>
   </ul>
 </div>
-<br>
-<br>
-<h2>I'm looking for...</h2>
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Device</th>
-      <th>Owned since</th>
-      <th>Owned By</th>
+<div class="alert alert-info" ng-hide="isDeviceAvailable()">Sorry, no device available at this time!</div>
+<hr>
+<div class='ng-cloak' ng-show="isDeviceInUse()">
+  <h2>I'm looking for...</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Device</th>
+        <th>Owned since</th>
+        <th>Owned By</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="holder in holders" ng-hide="isHeld(holder.deviceId, user)">
+      <td>{{ devices | deviceNameById : holder.deviceId }} (For {{timespan(holder.timespan, true)}})</td>
+      <td>
+        <timer start-time="holder.startAt" interval="60000">
+          <span ng-show="days">{{days}} days,</span>
+          <span ng-show="hours">{{hours}} hours,</span>
+          <span>{{minutes || 0}} minutes</span>
+        </timer>
+      </td>
+      <td>{{ holder.user }}</td>
     </tr>
-  </thead>
-  <tbody>
-  <tr ng-repeat="holder in holders" ng-class="{true: 'success'}[isHeld(holder.deviceId, user)]">
-    <td>{{ devices | device : holder.deviceId }} (For {{timespan(holder.timespan, true)}})</td>
-    <td>
-      <timer start-time="holder.startAt" interval="60000">
-        <span ng-show="days">{{days}} days,</span>
-        <span ng-show="hours">{{hours}} hours,</span>
-        <span ng-show="minutes">{{minutes}} minutes</span>
-      </timer>
-    </td>
-    <td>{{ owners | owner : holder.user }}</td>
-  </tr>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>

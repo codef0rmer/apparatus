@@ -1,13 +1,51 @@
 'use strict';
 
-angular.module('deviceFinderApp', ['firebase', 'timer'])
+angular.module('apparatusApp', ['firebase', 'timer', 'ngCookies'])
+  .constant('CONFIG', CONFIG)
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/main', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
+      })
+      .when('/', {
+        templateUrl: 'views/registration.html',
+        controller: 'RegistrationCtrl'
+      })
+      .when('/profile', {
+        templateUrl: 'views/profile.html',
+        controller: 'ProfileCtrl',
+        resolve: {
+          validate: function($q, $location) {
+            var validateAccess = $q.defer();
+
+            if (CONFIG.demo) {
+              $location.path('/main');
+            }
+
+            validateAccess.resolve();
+            return validateAccess.promise;
+          }
+        }
       })
       .otherwise({
         redirectTo: '/'
       });
+  })
+  .run(function($rootScope, $timeout, $cookies, $location, Auth) {
+    $rootScope.$on('auth:logout', function(event, args) {
+      $timeout(function() {
+        delete $cookies.user;
+        $location.path('/');
+      });
+    });
+
+    $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+      Auth.init();
+      $rootScope.cookies = $cookies;
+    });
+
+    $rootScope.logout = function() {
+      Auth.sally.logout();
+    };
   });

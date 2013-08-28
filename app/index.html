@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title></title>
+    <title>Apparatus</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -16,8 +16,23 @@
     <!-- endbuild -->
 
     <script src="https://cdn.firebase.com/v0/firebase.js"></script>
+    <script src='https://cdn.firebase.com/v0/firebase-simple-login.js'></script>
   </head>
-  <body ng-app="deviceFinderApp">
+  <body ng-app="apparatusApp">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="brand" href="#/main">Apparatus</a>
+            <p class="navbar-text pull-right ng-cloak" ng-show="cookies.user">
+              Welcome, <a href="#/profile" class="navbar-link">{{cookies.user}}</a>
+              <span class="divider">|</span>
+              <a href="" class="navbar-link" ng-click="logout()">Logout</a>
+              <span class="divider">|</span>
+              <a title="Help" href="#myModal" data-toggle="modal" class="navbar-link">Help?</a>
+            </p>
+        </div>
+      </div>
+    </div>
     <!--[if lt IE 7]>
       <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
     <![endif]-->
@@ -28,7 +43,6 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <a href="#myModal" role="button" class="help img-rounded btn btn-inverse btn-large pull-right" data-toggle="modal">?</a>
     <div class="container" ng-view=""></div>
 
     <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -43,13 +57,13 @@
             Lists all the devices which are available. The devices owned by you are highlighted in Green. 
             <ul>
               <li>In case you own a device then just click the button and choose a timespan.</li>
-              <li>In case you return the device back then just click the button and choose "slipped off" from the dropdown.</li>
+              <li>In case you no longer own a device then just click the button and choose "slipped off"</li>
             </ul>            
           </p>
 
           <h4>I'm looking for...</h4>
           <p>
-            Lists all the devices which are in use. The devices owned by you are highlighted in Light Green.  
+            Lists all the devices which are in use.
           </p>
         </p>
       </div>
@@ -58,6 +72,7 @@
     <!-- build:js scripts/plugins.js -->
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-cookies/angular-cookies.js"></script>
     <script src="bower_components/angular-fire/angularFire.js"></script>
     <script src="bower_components/angular-timer/angular-timer.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
@@ -66,10 +81,14 @@
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="config.js"></script>
     <script src="scripts/app.js"></script>
+    <script src="scripts/services/auth.js"></script>
     <script src="scripts/controllers/main.js"></script>
-    <script src="scripts/filters/device.js"></script>
-    <script src="scripts/filters/owner.js"></script>
+    <script src="scripts/controllers/registration.js"></script>
+    <script src="scripts/controllers/profile.js"></script>
+    <script src="scripts/filters/deviceNameById.js"></script>
+    <script src="scripts/filters/deviceByCategory.js"></script>
     <!-- endbuild -->
 </body>
 </html>

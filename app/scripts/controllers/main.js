@@ -1,43 +1,53 @@
 'use strict';
 
-angular.module('deviceFinderApp')
-  .controller('MainCtrl', function ($scope, angularFire) {
-    $scope.user = '172.18.11.226';
-    $scope.owners = [
-      { user: '172.18.11.226', name: 'Amit Gharat' }
-    ];
+angular.module('apparatusApp')
+  .controller('MainCtrl', function ($scope, $timeout, $cookies, angularFireCollection, CONFIG) {
+    $scope.user = $cookies.user;
 
-    angularFire('https://dide.firebaseio.com/holders', $scope, 'holders').then(function() {
-      $scope.devices = [
-        { id: 1, name: 'iPad 2 iOS6', device: 'HMHHKHHMHHKH37', hold: 'none' },
-        { id: 2, name: 'iPad 3 iOS5', device: 'HMHHKHHMHHKH39', hold: 'none' },
-        { id: 3, name: 'iPad 3 iOS6', device: 'HMHHKHHMHHKH45', hold: 'none' }
-      ];
-    });
-
-
-    $scope.buy = function(deviceId, timespan) {
-      var device = _.filter($scope.devices, function(device) {
-            return device.id === deviceId;
-          })[0];
-
-      if ($scope.isHeld(deviceId, $scope.user)) {
-        $scope.holders.forEach(function(item, i) {
-          if (item.user === $scope.user && item.deviceId === deviceId) {
-            $scope.holders[i]['timespan'] = $scope.timespan(timespan);
-            $scope.holders[i]['startAt'] = new Date().getTime();
+    $scope.holders = angularFireCollection(new Firebase(CONFIG.firebase + '/holders'), function() {
+      $timeout(function() {
+        $scope.devices = CONFIG.devices;
+        $scope.devices.forEach(function(device, i) {
+          if ($scope.isHeld(device.id, $scope.user)) {
+            $scope.devices[i].hold = 'me';
+          } else if ($scope.isHeld(device.id)) {
+            $scope.devices[i].hold = 'you';
+          } else {
+            $scope.devices[i].hold = 'none';
           }
         });
-      } else {
-        $scope.holders.push({
+
+        $scope.categories = _.map(_.groupBy($scope.devices, function(device) {
+          return device.category;
+        }), function(devices, category) {
+          return category;
+        });
+
+        $scope.filters = [];
+      });
+    });
+
+    $scope.buy = function(deviceId, timespan) {
+      var holder = $scope.getHolder(deviceId);
+
+      if (holder && holder.user === $scope.user) {
+        $scope.holders.update({
+          $ref: holder.$ref,
           user: $scope.user,
-          deviceId: device.id,
+          deviceId: deviceId,
+          timespan: $scope.timespan(timespan),
+          startAt: new Date().getTime()
+        });
+      } else if (!$scope.isHeld(deviceId)) {
+        $scope.holders.add({
+          user: $scope.user,
+          deviceId: deviceId,
           timespan: $scope.timespan(timespan),
           startAt: new Date().getTime()
         });
 
         _.each($scope.devices, function(item, i) {
-          if (item.id === device.id) {
+          if (item.id === deviceId) {
             $scope.devices[i].hold = 'me';
           }
         });
@@ -45,9 +55,11 @@ angular.module('deviceFinderApp')
     };
 
     $scope.sell = function(deviceId) {
-      $scope.holders = _.reject($scope.holders, function(item) {
-        return item.user === $scope.user && item.deviceId === deviceId;
-      });
+      var holder = $scope.getHolder(deviceId);
+
+      if (holder && holder.user !== $scope.user) return;
+
+      $scope.holders.remove({ $ref: holder.$ref });
 
       _.each($scope.devices, function(item, i) {
         if (item.id === deviceId) {
@@ -56,11 +68,37 @@ angular.module('deviceFinderApp')
       });
     };
 
+    $scope.getHolder = function(deviceId) {
+      return _.findWhere($scope.holders, { deviceId: deviceId });
+    };
+
     $scope.isHeld = function(deviceId, user) {
       if (angular.isDefined(user)) {
         return angular.isDefined(_.findWhere($scope.holders, { user: user, deviceId: deviceId }));        
       } else {
         return angular.isDefined(_.findWhere($scope.holders, { deviceId: deviceId }));        
+      }
+    };
+
+    $scope.isDeviceAvailable = function() {
+      return _.filter($scope.devices, function(device) {
+        return device.hold !== 'you';
+      }).length > 0;
+    };
+
+    $scope.isDeviceInUse = function() {
+      return _.filter($scope.holders, function(holder) {
+        return !$scope.isHeld(holder.deviceId, $scope.user);
+      }).length > 0;
+    };
+
+    $scope.filterIt = function(category) {
+      var index = _.indexOf($scope.filters, category);
+
+      if (index !== -1) {
+        $scope.filters.splice(index, 1);
+      } else {
+        $scope.filters.push(category);
       }
     };
 
@@ -90,6 +128,9 @@ angular.module('deviceFinderApp')
           case 960:
             time = '2 Days';
             break;
+          case 999999999999:
+            time = 'Forever';
+            break;
           default:
             time = '30 Minutes';
             break;
@@ -117,18 +158,20 @@ angular.module('deviceFinderApp')
           case '2 Days':
             time = 960;
             break;
+          case 'Forever':
+            time = 999999999999;
+            break;
           default:
             time = 30;
             break;
         }        
       }
-
       
       return time;
     };
 
-    $scope.$watch('holders', function(newVal) {
-      if (newVal) {
+    $scope.$watch('holders.length', function(newVal) {
+      if (newVal && $scope.devices) {
         $scope.devices.forEach(function(device, i) {
           if ($scope.isHeld(device.id, $scope.user)) {
             $scope.devices[i].hold = 'me';
@@ -137,7 +180,7 @@ angular.module('deviceFinderApp')
           } else {
             $scope.devices[i].hold = 'none';
           }
-        });        
+        });
       }
     });
   });

@@ -1,14 +1,14 @@
 'use strict';
 
-describe('Filter: device', function () {
+describe('Filter: deviceNameById', function () {
 
   // load the filter's module
-  beforeEach(module('deviceFinderApp'));
+  beforeEach(module('apparatusApp'));
 
   // initialize a new instance of the filter before each test
-  var device, $scope;
+  var deviceNameById, $scope;
   beforeEach(inject(function ($filter, $rootScope) {
-    device = $filter('device');
+    deviceNameById = $filter('deviceNameById');
     $scope = $rootScope.$new();
   }));
 
@@ -19,8 +19,8 @@ describe('Filter: device', function () {
       { id: 3, name: 'iPad 3 iOS6', device: 'HMHHKHHMHHKH45', hold: 'none' }
     ];
 
-    expect(device($scope.devices, 1)).toBe('iPad 2 iOS6');
-    expect(device($scope.devices, 2)).toBe('iPad 3 iOS5');
-    expect(device($scope.devices, 3)).toBe('iPad 3 iOS6');
+    expect(deviceNameById($scope.devices, 1)).toBe('iPad 2 iOS6');
+    expect(deviceNameById($scope.devices, 2)).toBe('iPad 3 iOS5');
+    expect(deviceNameById($scope.devices, 3)).toBe('iPad 3 iOS6');
   });
 });
