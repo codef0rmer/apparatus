@@ -1,51 +1,56 @@
 'use strict';
 
-angular.module('apparatusApp', ['firebase', 'timer', 'ngCookies'])
-  .constant('CONFIG', CONFIG)
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/main', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/', {
-        templateUrl: 'views/registration.html',
-        controller: 'RegistrationCtrl'
-      })
-      .when('/profile', {
-        templateUrl: 'views/profile.html',
-        controller: 'ProfileCtrl',
-        resolve: {
-          validate: function($q, $location) {
-            var validateAccess = $q.defer();
+var FiltersModule = angular.module('App.filters', []);
 
-            if (CONFIG.demo) {
-              $location.path('/main');
-            }
+var App = angular.module('apparatusApp', ['firebase', 'timer', 'ngCookies', 'App.filters']);
 
-            validateAccess.resolve();
-            return validateAccess.promise;
+App.constant('CONFIG', CONFIG);
+
+App.config(function($routeProvider) {
+  $routeProvider
+    .when('/main', {
+      templateUrl: 'views/main.html',
+      controller: 'MainCtrl'
+    })
+    .when('/', {
+      templateUrl: 'views/registration.html',
+      controller: 'RegistrationCtrl'
+    })
+    .when('/profile', {
+      templateUrl: 'views/profile.html',
+      controller: 'ProfileCtrl',
+      resolve: {
+        validate: function($q, $location) {
+          var validateAccess = $q.defer();
+
+          if (CONFIG.demo) {
+            $location.path('/main');
           }
+
+          validateAccess.resolve();
+          return validateAccess.promise;
         }
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  })
-  .run(function($rootScope, $timeout, $cookies, $location, Auth) {
-    $rootScope.$on('auth:logout', function(event, args) {
-      $timeout(function() {
-        delete $cookies.user;
-        $location.path('/');
-      });
+      }
+    })
+    .otherwise({
+      redirectTo: '/'
     });
+});
 
-    $rootScope.$on('$routeChangeStart', function(scope, next, current) {
-      Auth.init();
-      $rootScope.cookies = $cookies;
+App.run(function($rootScope, $timeout, $cookies, $location, Auth) {
+  $rootScope.$on('auth:logout', function(event, args) {
+    $timeout(function() {
+      delete $cookies.user;
+      $location.path('/');
     });
-
-    $rootScope.logout = function() {
-      Auth.sally.logout();
-    };
   });
+
+  $rootScope.$on('$routeChangeStart', function(scope, next, current) {
+    Auth.init();
+    $rootScope.cookies = $cookies;
+  });
+
+  $rootScope.logout = function() {
+    Auth.sally.logout();
+  };
+});

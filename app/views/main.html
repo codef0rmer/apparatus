@@ -41,7 +41,7 @@
     </thead>
     <tbody>
     <tr ng-repeat="holder in holders" ng-hide="isHeld(holder.deviceId, user)">
-      <td>{{ devices | deviceNameById : holder.deviceId }} (For {{timespan(holder.timespan, true)}})</td>
+      <td>{{ devices | deviceNameById : holder.deviceId }} (For {{ holder.timespan | timespan : true }})</td>
       <td>
         <timer start-time="holder.startAt" interval="60000">
           <span ng-show="days">{{days}} days,</span>

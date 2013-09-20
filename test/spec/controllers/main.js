@@ -31,28 +31,6 @@ describe('Controller: MainCtrl', function () {
     ];
   }));
 
-  it('should return timespan in minutes', function () {
-    expect($scope.timespan()).toBe(30);
-    expect($scope.timespan('30 Minutes')).toBe(30);
-    expect($scope.timespan('1 Hour')).toBe(60);
-    expect($scope.timespan('2 Hours')).toBe(120);
-    expect($scope.timespan('3 Hours')).toBe(180);
-    expect($scope.timespan('4 Hours')).toBe(240);
-    expect($scope.timespan('Whole Day')).toBe(480);
-    expect($scope.timespan('2 Days')).toBe(960);
-  });
-
-  it('should return timespan in human readable format', function () {
-    expect($scope.timespan('', true)).toBe('30 Minutes');
-    expect($scope.timespan(30, true)).toBe('30 Minutes');
-    expect($scope.timespan(60, true)).toBe('1 Hour');
-    expect($scope.timespan(120, true)).toBe('2 Hours');
-    expect($scope.timespan(180, true)).toBe('3 Hours');
-    expect($scope.timespan(240, true)).toBe('4 Hours');
-    expect($scope.timespan(480, true)).toBe('Whole Day');
-    expect($scope.timespan(960, true)).toBe('2 Days');
-  });
-
   it('should check if particular user owns a device', function() {
     expect($scope.isHeld(1, '172.18.11.226')).toBeTruthy();
     expect($scope.isHeld(2, '172.18.11.226')).toBeFalsy();
