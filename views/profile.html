@@ -1,0 +1,37 @@
+<form class="form-horizontal" style="width: 400px" ng-submit="changePassword()">
+  <div class="alert alert-error" ng-show="error_code">
+    <span ng-show="error_code == 'INVALID_EMAIL' || error_code == 'INVALID_USER'">Entered email is invalid.</span>
+    <span ng-show="error_code == 'INVALID_PASSWORD'">Current password is invalid.</span>
+    <span ng-show="error_code == 'UNKNOWN_ERROR' || error_code == 'AUTHENTICATION_DISABLED' || error_code == 'USER_DENIED'">Sorry, something goes wrong.</span>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="inputEmail">Email</label>
+    <div class="controls">
+      <input type="text" id="inputEmail" ng-init="change.email = cookies.user" ng-model="change.email" disabled="disabled">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Current Password</label>
+    <div class="controls">
+      <input type="password" ng-model="change.current_password">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">New Password</label>
+    <div class="controls">
+      <input type="password" ng-model="change.new_password">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Confirm Password</label>
+    <div class="controls">
+      <input type="password" ng-model="change.confirm_password">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button type="submit" class="btn btn-danger" ng-disabled="!change.email || !change.current_password || !change.new_password || !change.confirm_password || change.new_password != change.confirm_password">Change Password</button>
+    </div>
+  </div>
+</form>

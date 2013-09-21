@@ -1,0 +1,25 @@
+<div class="alert alert-info ng-cloak" ng-hide="!CONFIG.demo">
+  <strong>Try It!</strong> 
+  <ol>
+    <li><small>Open this url in two different browsers such as Chrome and Firefox.</small></li>
+    <li><small>In Chrome, use <b>neo@matrix.com</b> as email and <b>neo</b> as password.</small></li>
+    <li><small>In Firefox, use <b>trinity@matrix.com</b> as email and <b>trinity</b> as password.</small></li>
+    <li><small>Play around in Real-Time :-)</small></li>
+  </ol>
+</div>
+<form class="form-signin">
+  <div class="alert alert-info ng-cloak" ng-show="isRegistered">You have registered successfully. Please Sign In</div>
+
+  <div class="alert alert-error" ng-show="error_code">
+    <span ng-show="error_code == 'EMAIL_TAKEN'">Entered email is already taken.</span>
+    <span ng-show="error_code == 'INVALID_EMAIL' || error_code == 'INVALID_USER'">Entered email is invalid.</span>
+    <span ng-show="error_code == 'INVALID_PASSWORD'">Entered password is invalid.</span>
+    <span ng-show="error_code == 'UNKNOWN_ERROR' || error_code == 'AUTHENTICATION_DISABLED' || error_code == 'USER_DENIED'">Sorry, something goes wrong.</span>
+  </div>
+  <input type="text" class="input-block-level" placeholder="Email address" ng-model="email">
+  <input type="password" class="input-block-level" placeholder="Password" ng-model="password">
+  <button class="btn btn-large btn-primary" type="submit" ng-click="loginMe(email, password)" ng-disabled="!email || !password">Sign in</button>
+  <span ng-hide="CONFIG.demo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+  <button class="btn btn-large btn-danger" type="button" ng-click="registerMe(email, password)" ng-disabled="!email || !password" ng-hide="CONFIG.demo">Sign up</button>
+
+</form>
