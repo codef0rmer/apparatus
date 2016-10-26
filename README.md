@@ -13,7 +13,7 @@ I did not have enough time to spend on backend and wanted to save trivial inform
 * [Twitter Bootstrap](http://getbootstrap.com/2.3.2)
 * [Underscore.js](http://underscorejs.org)
 * [Karma Test Runner](http://karma-runner.github.io/0.10/index.html)
-* [Jasmine](http://pivotal.github.io/jasmine)
+* [Jasmine](https://jasmine.github.io/)
 
 ##Want to use at your place?
 Just modify `app/CONFIG.js` to suit your need.
